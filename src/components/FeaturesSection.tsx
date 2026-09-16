@@ -1,0 +1,23 @@
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, Check, ChevronRight } from 'lucide-react';
+
+const features = [
+ {title:'1. Подготовка и стратегия',desc:'До публикации нужно определить цель и сроки, проверить документы, подготовить квартиру и заранее понять сценарий продажи.',image:'https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/portrait.png'},
+ {title:'2. Цена и упаковка',desc:'Цена и первое впечатление определяют, кто заметит объявление и кто дойдёт до показа. Здесь важны рынок, фото, видео и текст.',image:'https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/desk.png'},
+ {title:'3. Поиск и работа с покупателем',desc:'Размещение — только начало. Нужно быстро обрабатывать обращения, квалифицировать покупателей и переводить интерес в показы.',image:'https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/portrait.jpg'},
+ {title:'4. Показы, переговоры и торг',desc:'Показ должен вести к следующему шагу. Возражения и торг лучше проходить по подготовленной логике, а договорённости фиксировать.',image:'https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/desk.jpg'},
+ {title:'5. Безопасная сделка',desc:'Финальная часть — проверка покупателя, договор, расчёты, регистрация и передача квартиры. Последовательность снижает риск ошибок.',image:'https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/portrait.png'},
+];
+
+export default function FeaturesSection(){
+ const [active,setActive]=useState(0); const [revealed,setRevealed]=useState<number[]>([]); const refs=useRef<(HTMLElement|null)[]>([]);
+ useEffect(()=>{ const observer=new IntersectionObserver(entries=>entries.forEach(e=>{const i=Number((e.target as HTMLElement).dataset.index); if(e.isIntersecting){setRevealed(r=>r.includes(i)?r:[...r,i]); if(e.intersectionRatio>=.6)setActive(i);}}),{threshold:[.15,.6]}); refs.current.forEach(el=>el&&observer.observe(el)); return()=>observer.disconnect();},[]);
+ const go=(i:number)=>refs.current[i]?.scrollIntoView({behavior:'smooth',block:'center'});
+ return <section id="system" className="relative overflow-hidden bg-[#07111e] px-5 py-20 text-white md:px-10 md:py-40 lg:px-16 lg:py-48">
+   <div className="absolute inset-0 -z-0 bg-cover bg-center opacity-45" style={{backgroundImage:'url(https://raw.githubusercontent.com/dancheei2-hue/prodazha/main/desk.jpg)'}}/><div className="absolute inset-0 -z-0 bg-[#07111e]/80"/>
+   <div className="relative z-10 mx-auto grid max-w-[1250px] gap-16 lg:grid-cols-[400px_1fr] xl:grid-cols-[460px_1fr] xl:gap-48">
+    <aside className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:py-20"><div><p className="eyebrow text-white/50">СИСТЕМА ПРОДАЖИ</p><h2 className="mt-4 text-3xl font-normal leading-[1.2] tracking-tight lg:text-[46px]">Продажа квартиры — это путь из 20 понятных этапов</h2><p className="mt-6 max-w-sm text-sm leading-relaxed text-white/60">Мы собрали их в последовательность, чтобы вы всегда понимали следующий шаг.</p></div><div className="mt-10 hidden lg:block"><div className="grid gap-2">{features.map((f,i)=><button key={f.title} onClick={()=>go(i)} className={`flex items-center rounded-xl px-4 py-3 text-left text-sm transition ${active===i?'bg-white/15 text-white':'bg-white/5 text-white/40 hover:text-white/70'}`}><span className="w-8 text-xs">0{i+1}</span><span className="flex-1">{f.title.replace(/^\d+\. /,'')}</span><ChevronRight className="h-4 w-4"/></button>)}</div><a href="stages.html" className="mt-6 inline-flex items-center rounded-xl bg-white px-5 py-3 text-sm font-medium text-[#07111e]">Все 20 этапов <ArrowRight className="ml-2 h-4 w-4"/></a></div></aside>
+    <div className="space-y-20 lg:space-y-[38vh]">{features.map((f,i)=><article key={f.title} data-index={i} ref={el=>{refs.current[i]=el}} className={`rounded-3xl bg-black/20 p-5 backdrop-blur-sm transition-all duration-700 ease-out md:p-10 ${revealed.includes(i)?'translate-x-0 opacity-100':'translate-x-16 opacity-0'}`}><div className="flex items-center gap-3 text-white/70"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-sm font-medium">0{i+1}</span><span className="text-xs uppercase tracking-[.15em]">Этап продажи</span></div><h3 className="mt-5 text-xl font-medium md:text-2xl">{f.title}</h3><div className="mt-6 aspect-video overflow-hidden rounded-2xl bg-black/30"><img src={f.image} alt="" className="h-full w-full object-cover"/></div><p className="mt-5 max-w-2xl text-sm font-medium leading-relaxed text-white/60 md:text-base">{f.desc}</p><div className="mt-6 flex items-center gap-2 text-sm text-white/80"><Check className="h-4 w-4"/> Следующий шаг становится понятен</div></article>)}</div>
+   </div>
+ </section>
+}
